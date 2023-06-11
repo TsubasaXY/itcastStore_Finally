@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.itcaststore.mapper.UserMapper">
+    <select id="findUserbyName" parameterType="user" resultType="user">
+        select * from user where username =#{username}
+    </select>
+<!--    void AddUser(User user);-->
+    <insert id="AddUser" parameterType="user">
+        insert into user(username,password,gender,email,telephone,introduce,activeCode,state) values(#{username},#{password},#{gender},#{email},#{telephone},#{introduce},#{activeCode},0)
+    </insert>
+<!--    void activeUser(String activecode);-->
+    <update id="activeUser" parameterType="String">
+        update user set state=1 where activeCode=#{activeCode}
+    </update>
+    <select id="findUserByActiveCode" parameterType="user" resultType="user">
+        select * from user where activeCode=#{activeCode}
+    </select>
+<!--    User findUserByUsernameAndPassword(String username, String PASSWORD);-->
+    <select id="findUserByUsernameAndPassword" parameterType="user" resultType="user">
+        select * from user where username=#{username} and PASSWORD=#{password}
+    </select>
+<!--    List<User> queryByName(String username);-->
+    <select id="queryByName" parameterType="user" resultType="boolean">
+        select * from user where username=#{username}
+    </select>
+</mapper>
+

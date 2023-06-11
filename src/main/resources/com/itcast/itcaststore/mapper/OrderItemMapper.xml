@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.itcaststore.mapper.OrderItemMapper">
+<!--    public void addOrderItem(Order order);-->
+    <!-- 插入多条订单条目 -->
+    <insert id="addOrderItem" parameterType="com.itcast.itcaststore.domain.OrderItem">
+            insert into orderitem (order_id, product_id, buynum)
+            values (#{order.id}, #{p.id}, #{buynum})
+    </insert>
+<!--    public List<OrderItem> findOrderItemByOrder(final Order order);-->
+    <select id="findOrderItemByOrder" resultMap="orderItemResultMap">
+        select * from orderItem, Products
+        where Products.id = orderItem.product_id
+          and order_id = #{order.id}
+    </select>
+
+    <resultMap type="com.itcast.itcaststore.domain.OrderItem" id="orderItemResultMap">
+        <result property="buynum" column="buynum" />
+        <association property="p" javaType="com.itcast.itcaststore.domain.Product">
+            <id property="id" column="product_id" />
+            <result property="name" column="name" />
+            <result property="description" column="description" />
+            <result property="price" column="price" />
+            <result property="category" column="category" />
+            <result property="pnum" column="pnum" />
+            <result property="imgurl" column="imgurl" />
+        </association>
+        <association property="order" javaType="com.itcast.itcaststore.domain.Order">
+            <id property="id" column="order_id" />
+            <result property="money" column="money" />
+            <result property="receiverAddress" column="receiverAddress" />
+            <result property="receiverName" column="receiverName" />
+            <result property="receiverPhone" column="receiverPhone" />
+            <result property="paystate" column="paystate" />
+            <result property="ordertime" column="ordertime" />
+            <result property="user_id" column="user_id" />
+        </association>
+    </resultMap>
+
+    <!--    public void delOrderItems(String id);-->
+    <delete id="delOrderItems" parameterType="String">
+        delete from orderItem where order_id=#{id}
+    </delete>
+</mapper>

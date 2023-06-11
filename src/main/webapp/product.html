@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>图书</title>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.js"></script>
+    <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css" type="text/css"/>
+
+</head>
+<body>
+<script>
+    $(function (){
+        // var lsp=$("#my").val();//获得站点虚拟目录
+        //
+        // var url=lsp+"/ShowProductByPageServlet";//要调用的servlet全路径
+
+        $.get("/ShowProductByPageServlet",function (data){
+            for (i=0;i<data.ps.length;i++)
+            {
+                var resu='<div class="col-sm-6 col-md-3"><div class="thumbnail">\n'+
+                    '  <img src="'+data.ps[i].imgurl+'" alt="..." class="bimg"/>\n'+
+                    '  <div class="caption">\n'+
+                    '  <h3 id="firstt">'+data.ps[i].name+'</h3>\n'+
+                    '  <p id="firstp">'+data.ps[i].price+'</p>\n'+
+                    '  </div></div></div>';
+                $("#content").append(resu);
+            }
+        });
+    });
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="images/logo.png" alt="">
+        </div>
+        <div class="col-md-4 col-md-offset-4">
+            <ul class="list-inline">
+                <li role="presentation"><a href="">  <img src="images/cart.gif" alt="">购物车 | </a></li>
+                <li role="presentation"><a href="">帮助中心 | </a></li>
+                <li role="presentation"><a href="">我的账户 | </a></li>
+                <li role="presentation"><a href="/register.jsp">新用户注册</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div style="background-color: #419641;height: 3px;margin-top: 20px;"></div>
+
+<div class="row" style="background-color: black;height: 50px;">
+    <nav class="navbar navbar-default" role="navigation" style="background-color: black;">
+        <div class="container-fluid col-md-10 col-md-offset-1">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse"
+                        data-target="#example-navbar-collapse">
+                    <span class="sr-only">切换导航</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"></a>
+
+            </div>
+            <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li> <a href="${pageContext.request.contextPath}/showProductByPage?category=文学">文学</a></li>
+                    <li><a href="#" style="color: white">生活</a></li>
+                    <li><a href="#" style="color: white">计算机</a></li>
+                    <li><a href="#" style="color: white">外语</a></li>
+                    <li><a href="#" style="color: white">经管</a></li>
+                    <li><a href="#" style="color: white">励志</a></li>
+                    <li><a href="#" style="color: white">社科</a></li>
+                    <li><a href="#" style="color: white">学术</a></li>
+                    <li><a href="#" style="color: white">少儿</a></li>
+                    <li><a href="#" style="color: white">艺术</a></li>
+                    <li><a href="#" style="color: white">原版</a></li>
+                    <li><a href="#" style="color: white">科技</a></li>
+                    <li><a href="#" style="color: white">考试</a></li>
+                    <li><a href="#" style="color: white">生活百科</a></li>
+                    <li><a href="#" style="color: yellow">全部商品目录</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="row" style="background-color: orange;">
+    <div class="col-md-6 col-md-offset-5">
+        <form class="navbar-form navbar-right">
+            <div class="form-group">
+                <label for="exampleInputEmail2" style="color: white">Search</label>
+                <input style="height: 24px;width: 150px;" type="email" class="form-control" id="exampleInputEmail2"
+                       placeholder="请输入书名">
+            </div>
+            <!--                <button type="submit" class="btn btn-default" style="background-color: #419641;color: white">搜索</button>-->
+            <img src="images/serchbutton.gif" alt="">
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2" style="background-color: #fcf8e3;margin-bottom: 20px;">
+        <div class="col-md-10 col-md-offset-1" style="border: 1px solid grey;margin-top: 50px;">
+            <p style="font-size: 18px;margin-left: 10px;margin-top: 20px;"><b>商品目录</b></p>
+            <p style="font-size: 18px;margin-left: 10px;"><b>全部商品</b> 共  种商品</p>
+            <div>
+                <img src="images/productlist.jpg" alt="" style="width: 95%;margin-left: 10px;">
+            </div>
+
+            <div class="col-sm-6 col-md-3" id="content">
+                <!--                <div class="thumbnail">-->
+                <!--                    <img src="" alt="..." id="firstim">-->
+                <!--                    <div class="caption">-->
+                <!--                        <h3>Thumbnail label</h3>-->
+                <!--                        <p id="firstp">...</p>-->
+                <!--                        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--//底部-->
+<div class="row" style="background-color: #d4d4d4;">
+    <div class="container">
+        <div class="col-md-2">
+            <img src="./images/logo.png" alt="">
+        </div>
+        <div class="col-md-4 col-md-offset-1">
+            <p style="color: #8c8c8c"><b>CONTACTUS</b></p>
+            <p style="color: #adadad">COPYRIGHT 2015@BookStore All Rights RESERVEN.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

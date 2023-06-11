@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.itcaststore.mapper.ProductMapper">
+<!--    public void addProduct(Product p);-->
+<!--    insert into products values(?,?,?,?,?,?,?)-->
+<insert id="addProduct" parameterType="product">
+        insert into products(id,name,price,category,pnum,imgurl,description)values (#{id},#{name},#{price},#{category},#{pnum},#{imgurl},#{description})
+</insert>
+<!--    public List<Product> listAll();-->
+<!--    select * from products-->
+<select id="listAll" parameterType="product" resultType="product">
+    select * from products
+</select>
+
+<!--    public int findAllCount(String category);-->
+<!--    select count(*) from products-->
+<select id="findAllCount" parameterType="string" resultType="int">
+    select count(*) from products
+
+    <if test="category!='全部商品'">
+        where category like #{category}
+    </if>
+</select>
+<!--    public List<Product> findByPage(int currentPage, int currentCount, String category);-->
+<!--    select * from products  where category=? limit ?,?-->
+<!--    select * from products  limit ?,?-->
+<select id="findByPage" resultType="product">
+    select * from products
+
+    <if test="category!='全部商品'">
+        where category=#{category} limit  #{currentPage},#{currentCount}
+    </if>
+
+    <if test="category=='全部商品'">
+        limit #{currentPage},#{currentCount}
+    </if>
+
+</select>
+
+
+
+<!--    public Product findProductById(String id);-->
+<!--    select * from products where id=?-->
+<select id="findProductById" parameterType="string" resultType="product">
+    select * from products where id=#{id}
+</select>
+<!--    public void changeProductNum(Order order);-->
+    <update id="changeProductNum" parameterType="com.itcast.itcaststore.domain.OrderItem">
+        update products set pnum=pnum-#{buynum} where id=#{p.id}
+    </update>
+<!--    update products set pnum=pnum-? where id=?-->
+<!--<update id="changeProductNum" parameterType="order">-->
+<!--    update products set pnum=pnum-? where id=?-->
+<!--</update>-->
+<!--    public List<SaleTop> salesList(String year, String month);-->
+<!--    <select id="saleslist" parameterType="string" resultType="list" resultMap="saletop">-->
+<!--        SELECT products.name productName,SUM(orderitem.buynum) totalSum-->
+<!--        FROM orders,products,orderItem WHERE orders.id=orderItem.order_id-->
+<!--        AND products.id=orderItem.product_id AND orders.paystate=1 and year(ordertime)="2022"-->
+<!--        and month(ordertime)="06" GROUP BY products.name ORDER BY totalSum DESC-->
+<!--    </select>-->
+    <resultMap id="saletop" type="com.itcast.itcaststore.domain.SaleTop">
+        <result column="productName" property="productName"/>
+        <result column="totalSum" property="totalSum"/>
+    </resultMap>
+    <select id="salesList" resultType="saletop">
+        SELECT products.name AS productName, SUM(orderitem.buynum) AS totalSum
+        FROM orders, products, orderItem
+        WHERE orders.id = orderItem.order_id AND products.id = orderItem.product_id
+            AND orders.paystate=1 AND YEAR(ordertime) = #{year} AND MONTH(ordertime) = #{month}
+        GROUP BY productName
+        ORDER BY totalSum DESC
+    </select>
+
+
+<!--    public List<Product> findProductByManyCondition(String id, String name, String category, String minprice, String maxprice);-->
+<!--    id name category minprice maxprice-->
+
+    <resultMap id="productCondition" type="com.itcast.itcaststore.domain.Product">
+            <result column="id" property="id"></result>
+            <result column="name" property="name"></result>
+            <result column="price" property="price"></result>
+            <result column="category" property="category"></result>
+    </resultMap>
+    <select id="findProductByManyCondition" resultMap="productCondition">
+        select * from products
+        <where>
+            <if test="id != null and id != ''">
+                AND id LIKE CONCAT('%', #{id}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                AND category LIKE CONCAT('%', #{category}, '%')
+            </if>
+            <if test="minPrice != null and minPrice!=''" >
+                and price >= #{minPrice}
+            </if>
+            <if test="maxPrice != null and maxPrice!=''">
+                and price &lt;= #{maxPrice}
+            </if>
+        </where>
+    </select>
+<!--    public void editProduct(Product p);-->
+    <update id="editProduct" parameterType="com.itcast.itcaststore.domain.Product">
+        update products set name=#{name},price=#{price},category=#{category},pnum=#{pnum},description=#{description}
+        <if test='imgurl != null and imgurl.trim().length() > 0'>,imgurl=#{imgurl}</if>
+        where id=#{id}
+    </update>
+<!--    public void updateProductNum(List<OrderItem> items);-->
+<!--    有问题！！！！！！！！！-->
+    <update id="updateProductNum">
+        <foreach collection="list" item="item" separator=";" >
+            update products set pnum=pnum+#{item.buynum} where id=#{item.p.id}
+        </foreach>
+    </update>
+
+
+    <!--    public List<WeekHotProduct> getWeekHotProduct();-->
+    <select id="getWeekHotProduct" resultMap="getWeekHotProduct" >
+        SELECT products.id,products.name,
+               products.imgurl,SUM(orderitem.buynum) totalsalnum
+        FROM orderitem,orders,products
+        WHERE orderitem.order_id = orders.id
+          AND products.id = orderitem.product_id
+          AND orders.paystate=1
+          AND orders.ordertime > DATE_SUB(NOW(), INTERVAL 7 DAY)
+        GROUP BY products.id,products.name,products.imgurl
+        ORDER BY totalsalnum DESC
+            LIMIT 0,2
+    </select>
+    <resultMap id="getWeekHotProduct" type="com.itcast.itcaststore.domain.WeekHotProduct">
+        <result column="id" property="product.id"/>
+        <result column="name" property="product.name"/>
+        <result column="imgurl" property="product.imgurl"/>
+        <result column="num" property="SUM(orderitem.buynum) totalsalnum"></result>
+    </resultMap>
+
+
+<!--    public List<Product> findBookByName(int currentPage, int currentCount, String searchfield);-->
+    <select id="findBookByName" resultType="com.itcast.itcaststore.domain.Product">
+        SELECT * FROM products WHERE name LIKE  CONCAT('%', #{searchfield}, '%')
+    </select>
+    <select id="getTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM products WHERE name LIKE CONCAT('%', #{searchfield}, '%')
+    </select>
+
+    <!--    public int findBookByNameAllCount(String searchfield);-->
+<!--    SELECT COUNT(*) FROM products WHERE name LIKE '%" + searchfield + "%'-->
+<select id="findBookByNameAllCount" resultType="int">
+    SELECT COUNT(*) FROM products WHERE name LIKE CONCAT('%', #{searchfield}, '%')
+</select>
+<!--    public void deleteProduct(String id);-->
+<select id="deleteProduct" parameterType="string">
+    DELETE FROM products WHERE id = #{id}
+</select>
+
+</mapper>

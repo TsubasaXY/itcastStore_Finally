@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.itcaststore.mapper.NoticeMapper">
+<!--    List<Notice> getAllNotices();-->
+<!--    select * from notice order by n_time desc limit 0,10-->
+    <select id="getAllNotices" resultType="notice">
+        select * from notice
+    </select>
+<!--    void addNotice(Notice notice);-->
+<!--    insert into notice(title,details,n_time) values(?,?,?)-->
+    <insert id="addNotice" parameterType="notice">
+        insert into notice(title,details,n_time) values(#{title},#{details},#{n_time})
+    </insert>
+<!--    Notice findNoticeById(String n_id);-->
+<!--    select * from notice where n_id = ?-->
+    <select id="findNoticeById" parameterType="string" resultType="notice">
+        select * from notice where n_id =#{n_id}
+    </select>
+<!--    void updateNotice(Notice notice);-->
+<!--    update notice set title=?,details=?,n_time=? where n_id=?-->
+    <update id="updateNotice" parameterType="notice">
+        update notice set title=#{title},details=#{details},n_time=#{n_time} where n_id=#{n_id}
+    </update>
+<!--    void deleteNotice(String n_id);-->
+<!--    delete from notice where n_id = ?-->
+    <delete id="deleteNotice">
+        delete from notice where n_id=#{n_id}
+    </delete>
+<!--    Notice getRecentNotice();-->
+<!--    select * from notice order by n_time desc limit 0,1-->
+    <select id="getRecentNotice" resultType="notice">
+        select * from notice order by n_time desc limit 0,1
+    </select>
+</mapper>

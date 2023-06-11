@@ -1,0 +1,257 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book</title>
+    <link rel="stylesheet" href="/css/bootstrapforreg.css">
+    <link rel="stylesheet" href="/css/styleforreg.css">
+    <script src="/js/jquery-3.6.0.js"></script>
+    <script src="/js/bootstrap.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+<%--    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>--%>
+<%--    <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.js"></script>--%>
+<%--    <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">--%>
+
+    <script>
+        window.onload = function () {
+            var mycode = document.getElementById("mycode");
+            mycode.onclick = function () {
+                var curtime = new Date();
+
+                mycode.src = "CodeServlet?k=" + curtime;//保证每次点击图片，都会向服务器发出请求，请求CodeServlet
+            }
+
+        }
+        //jQuery
+        $(function () {
+            var flag = false;
+            var flag2 = false;
+            var flag3 = false;
+            var flag4 = false;
+            var flag5 = false;
+            $("#email").keyup(function () {
+                var email = $("#email").val();
+                var aa = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+
+                if (!aa.test(email)) {
+                    $("#span").text("输入的邮箱不合法");
+                    $("#span").css({"color": "red"});
+                    flag = false;
+                } else {
+                    $("#span").text("√");
+                    $("#span").css({"color": "green"});
+                    flag = true;
+                }
+            });
+            //一、
+            $("#username").keyup(function (){
+                var username=$(this).val();
+                var re=/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/;
+                if (re.test(username)){
+                    $("#span2").text("√");
+                    $("#span2").css({"color": "green"});
+                    flag2 = true;
+                }else{
+                    $("#span2").text("用户名不符合要求");
+                    $("#span2").css({"color": "red"});
+                    flag2 =false;
+                }
+            });
+
+
+            $("#username").keyup(function (){
+                var userName=$(this).val();
+                var span2=$("#span2");
+                $.post({"username":userName},function (register){
+                    if (register){
+
+                        span2.css({"color": "red"});
+                    }else {
+
+                        span2.css({"color": "green"});
+                    }
+                });
+            });
+
+            $("#username").keyup(function(){                                   //blur失去焦点     //keyup输入就判断
+                var username = $(this).val();
+                $.post("RegComServlet",{username:username}, function(date){
+                    if(date.userExsit){
+                        //如果已经存在，提示账号已经被注册
+                        $("#span2").html("此用户名已存在");
+                        $("#span2").html(date.msg);
+                        $("#span2").css("color", "red");
+                    }else{
+                        $("#span2").html("账号可以注册!");
+                        $("#span2").html(date.msg);
+                        $("#span2").css("color", "green");
+                    }
+                });
+            });
+            $("#password").keyup(function () {
+                var pass = $("#password").val();
+                if (pass == "") {
+                    $("#span3").text("请输入密码");
+                    $("#span3").css({"color": "red"});
+                    flag3 = false;
+                } else if (pass.length < 6 || pass.length > 16) {
+                    $("#span3").text("请输入6-16密码");
+                    $("#span3").css({"color": "red"});
+                    flag3 = false;
+                } else {
+                    $("#span3").text("√");
+                    $("#span3").css({"color": "green"});
+                    flag3 = true;
+                }
+            });
+
+
+            $("#repassword").keyup(function () {
+                var pass = $("#password").val();
+                var pass2 = $("#repassword").val();
+                if (pass != pass2) {
+                    $("#span4").text("两次密码不一致");
+                    $("#span4").css({"color": "red"});
+                    flag4 = false;
+                } else {
+                    $("#span4").text("√");
+                    $("#span4").css({"color": "green"});
+                    flag4 = true;
+                }
+            });
+            // 目前国内的手机号码是1(3/4/5/7/8)开头的11位数字
+            $("#phone").keyup(function (){
+                var telephone=$(this).val();
+                var res=/^1[34578]\d{9}$/;
+                if (res.test(telephone)){
+                    $("#span5").text("√");
+                    $("#span5").css({"color": "green"});
+                    flag5 = true;
+                }else{
+                    $("#span5").text("手机号码不符合要求");
+                    $("#span5").css({"color": "red"});
+                    flag5 =false;
+                }
+            });
+        });
+    </script>
+
+</head>
+<body>
+<script src="js/navtop.js"></script>
+
+
+<div class="container" id="main">
+    <div class="row clearfix">
+        <div id="div3" class="col-md-6 column">
+            <div class="">
+                <br>
+                <h1 class="display-4">Hello, Guys!</h1><br>
+                <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra
+                    attention to featured content or information.</p>
+                <hr class="my-4">
+                <p>It uses utility classes for typography and spacing to space content out within the larger
+                    container.</p>
+                <br>
+                <a class="btn btn-primary btn-lg" href="mylogin.jsp" role="button">登录</a>
+            </div>
+        </div>
+        <div id="div5" class="col-md-6 column">
+            <form id="registerform" action="/RegisterServlet" method="post">
+                <div class="form-group" >
+                    <label for="InputEmail1">Email address</label>
+                    <input type="email" name="email" class="form-control " id="InputEmail1"
+                           aria-describedby="emailHelp" onfocus="alertShow(this)">
+                    <small id="emailHelp" class="alert alert-secondary form-text text-muted">您可以使用任意邮箱，
+                        <footer
+                                class="blockquote-footer">如果为qq邮箱会默认使用改qq头像为初始头像
+                        </footer>
+                    </small>
+                    <div class="invalid-feedback">
+                        请输入正确的邮箱地址。
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="InputUsername">Username</label>
+                    <input type="username" name="username" class="form-control " id="InputUsername"
+                           aria-describedby="usernameHelp" onblur="isSave()" onfocus="alertShow(this)">
+                    <small id="usernameHelp"
+                           class="alert alert-secondary form-text text-muted">你可以使用字母、数字,和下划线</small>
+                    <div class="invalid-feedback">
+                        您只能输入 5-20 个字符的字母和数字，且不能为空。
+                    </div>
+                    <span id="s_username"></span>
+                    <span id="username_msg"></span>
+                </div>
+                <div class="form-group">
+                    <label for="Password1">Password</label>
+                    <input type="password" name="password" class="form-control" id="Password1"
+                           onfocus="alertShow(this)" aria-describedby="password1Help">
+                    <small id="Password1Help" class="alert alert-secondary form-text text-muted">您可以使用8-20
+                        个字符的字母和数字</small>
+
+                    <div class="invalid-feedback">
+                        您的密码长度必须为 8-20 个字符，包含字母和数字，并且不得包含空格、特殊字符或表情符号。
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Password2">Confirm Password</label>
+                    <input type="password" name="regpassword" class="form-control" id="Password2"
+                           data-toggle="popover" aria-describedby="password2Help" title="提示" data-content="密码与第一次不匹配"
+                           onfocus="alertShow(this)">
+                    <small id="Password2Help"
+                           class="alert alert-secondary form-text text-muted">需要与第一次输入的密码相同</small>
+
+                    <div class="invalid-feedback">
+                        您输入的密码必须与第一次输入的密码相同。
+                    </div>
+                    <small id="passwordHelp2" class="alert alert-secondary form-text text-muted">你可以使用字母、数字,和下划线</small>
+                <span id="span3"></span>
+                </div>
+                <div class="form-group">
+                    <div class="form-group">
+                        <label >Gender：</label>
+                        <label class="radio-inline">
+                            <input type="radio" name="gender" id="inlineRadio1" value="男"> Man
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="gender" id="inlineRadio2" value="女"> Woman
+                        </label>
+                    </div>
+                    <small id="GenderHelp"
+                           class="alert alert-secondary form-text text-muted">请选择性别</small>
+                    <div class="invalid-feedback">
+                        请选择性别
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">MobilePhone：</label>
+                    <input type="text" class="form-control" id="phone"  name="telephone">
+                    <span id="span5"></span>
+                </div>
+                <div class="form-group">
+                    <label class="introduce">introduce：</label>
+                    <lable >
+                        <input type="text" class="form-control" rows="2" name="introduce">
+                    </lable>
+                    <span id="span6"></span>
+                </div>
+                <div class="form-group">
+                    <label class="chkcode">CheckCode</label>
+                    <input type="text" class="form-control" id="chkcode"  name="chkcode">
+                    <img src="CodeServlet" alt="" id="mycode"> <br>
+                </div>
+                <button id="submitbtn" type="submit" class="btn btn-primary">注册</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/js/register.js"></script>
+</body>
+
+</html>

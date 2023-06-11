@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itcast.itcaststore.mapper.OrderMapper">
+
+    <!--    整个有问题-->
+    <!--    public void addOrder(@Param("order") Order order, @Param("user") User user);-->
+    <insert id="addOrder" parameterType="com.itcast.itcaststore.domain.Order">
+        insert into orders(id, money, receiverAddress, receiverName, receiverPhone, paystate, ordertime, user_id)
+        values (#{id}, #{money}, #{receiverAddress}, #{receiverName}, #{receiverPhone}, 0, current_timestamp,
+                #{user.id})
+    </insert>
+    <!--    public List<Order> findOrderByUser(final User user);-->
+    <select id="findOrderByUser" parameterType="com.itcast.itcaststore.domain.User" resultMap="orderMap">
+        select *
+        from orders
+        where user_id = #{user.id}
+    </select>
+    <!--    public Order findOrderById(String id);-->
+    <select id="findOrderById" parameterType="com.itcast.itcaststore.domain.Order" resultMap="orderMap">
+        select *
+        from orders,
+             user
+        where orders.user_id = user.id
+          and orders.id = #{id}
+    </select>
+    <!--    public List<Order> findAllOrder();-->
+    <resultMap id="orderMap" type="com.itcast.itcaststore.domain.Order">
+        <id property="id" column="id"/>
+        <result property="money" column="money"/>
+        <result property="ordertime" column="ordertime"/>
+        <result property="paystate" column="paystate"/>
+        <result property="receiverAddress" column="receiverAddress"/>
+        <result property="receiverName" column="receiverName"/>
+        <result property="receiverPhone" column="receiverPhone"/>
+        <association property="user" javaType="com.itcast.itcaststore.domain.User">
+            <id property="id" column="user_id"/>
+            <result property="email" column="email"/>
+            <result property="gender" column="gender"/>
+            <result property="activeCode" column="activecode"/>
+            <result property="introduce" column="introduce"/>
+            <result property="password" column="password"/>
+            <result property="registTime" column="registtime"/>
+            <result property="role" column="role"/>
+            <result property="state" column="state"/>
+            <result property="telephone" column="telephone"/>
+            <result property="username" column="username"/>
+        </association>
+    </resultMap>
+
+    <select id="findAllOrder" resultMap="orderMap">
+        select *
+        from orders,
+             user
+        where orders.user_id = user.id
+    </select>
+    <!--    public void updateOrderState(String id);-->
+    <update id="updateOrderState" parameterType="String">
+        update orders
+        set paystate=1
+        where id = #{id}
+    </update>
+    <!--    public List<Order> findOrderByManyCondition(String id,String receiverName);-->
+    <select id="findOrderByManyCondition" parameterType="map" resultMap="orderMap">
+        select orders.*, user.* from orders inner join user on user.id = orders.user_id
+        <where>
+            <if test="id != null and id.trim().length() > 0">
+                and orders.id = #{id}
+            </if>
+            <if test="receiverName != null and receiverName.trim().length() > 0">
+                and orders.receiverName = #{receiverName}
+            </if>
+        </where>
+        order by orders.user_id
+    </select>
+
+
+    <!--    public void delOrderByid(String id);-->
+    <delete id="delOrderByid" parameterType="String">
+        delete
+        from orders
+        where id = #{id}
+    </delete>
+</mapper>
